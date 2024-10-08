@@ -10,7 +10,7 @@ export async function fetchInput(year: number, day: number) {
     const response = await fetch(`https://adventofcode.com/${year}/day/${day}/input`, {
         headers: {"Cookie": `session=${session}`}
     });
-    const inputText = await response.text();
+    const inputText = (await response.text()).trim();
     await Bun.write(saved, inputText);
     return inputText;
 }
