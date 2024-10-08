@@ -3,7 +3,7 @@ import { fetchInput } from "../../fetchInput";
 const data = (await fetchInput(2020, 1)).split("\n");
 const dataNumbers = data.map(d => parseInt(d, 10));
 
-const obj = dataNumbers.reduce((o, num) => {o[num] = true; return o;}, {});
+const obj = dataNumbers.reduce<Record<string, boolean>>((o, num) => {o[num] = true; return o;}, {});
 
 // part 1
 const match = dataNumbers.find(a => obj[2020 - a]);

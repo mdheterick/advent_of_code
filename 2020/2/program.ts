@@ -11,7 +11,7 @@ class Password {
     max: number;
     char: string;
     constructor(line: string) {
-        const [, min, max, char, value] = reg.exec(line);
+        const [, min, max, char, value] = reg.exec(line)!;
         this.value = value;
         this.min = parseInt(min, 10);
         this.max = parseInt(max, 10);
