@@ -1,4 +1,5 @@
 import { fetchInput } from "../../fetchInput";
+import { popIndex } from "../../utils";
 
 const data = await fetchInput(2024, 2);
 
@@ -52,9 +53,7 @@ const unsafe = reports.filter(r => !r.monotonic1());
 
 const dampened = unsafe.filter(u => {
     for (const i in u.levels) {
-        const levelsCopy = [...u.levels];
-        levelsCopy.splice(Number(i), 1);
-        if ((new Report(levelsCopy.join(" "))).monotonic1()) return true;
+        if ((new Report(popIndex(u.levels, Number(i)).join(" "))).monotonic1()) return true;
     }
 });
 

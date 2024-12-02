@@ -37,3 +37,9 @@ export function gcd(a: number, b: number) {
     const smallest = a > b ? b : a;
     return gcd(smallest, biggest % smallest);
 }
+
+export function popIndex<T>(arr: Array<T>, index: number) {
+    const copy = [...arr];
+    copy.splice(index, 1);
+    return copy;
+}
