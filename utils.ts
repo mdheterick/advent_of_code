@@ -43,3 +43,20 @@ export function popIndex<T>(arr: Array<T>, index: number) {
     copy.splice(index, 1);
     return copy;
 }
+
+export class Coordinate {
+    x: number;
+    y: number;
+    constructor(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+    }
+    
+    * directions2d() {
+        for (let x = -1; x < 2; x++) {
+            for (let y = -1; y < 2; y++) {
+                yield [x, y] as [-1 | 0 | 1, -1 | 0 | 1];
+            }
+        }
+    }
+}
