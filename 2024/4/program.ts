@@ -24,21 +24,26 @@ class Coordinate extends UtilCoordinate {
         this.value = value;
     }
 
-    checkXmas(_grid: Array<Array<Coordinate>>, dx: -1 | 0 | 1, dy: -1 | 0 | 1, value: "X" | "M" | "A" | "S"): boolean {
-        const sequence = ["X", "M", "A", "S"] as const;
-        if (grid[this.y + dy] && grid[this.y + dy][this.x + dx] && grid[this.y + dy][this.x + dx].value === value) {
-            if (value === "S") {
-                return true
+    checkNeighbour(_grid: Array<Array<Coordinate>>, dx: number, dy: number, value: string) {
+        const neighbour = this.getNeighbour(_grid, dx, dy);
+        if (!neighbour) return false;
+        return neighbour.value === value;
+    }
+
+    checkSequence(sequence: Array<string>, _grid: Array<Array<Coordinate>>, dx: number, dy: number) {
+        for (let i = 0; i < sequence.length; i++) {
+            if (!this.checkNeighbour(_grid, dx * i, dy * i, sequence[i])) {
+                return false;
             }
-            return grid[this.y + dy][this.x + dx].checkXmas(_grid, dx, dy, sequence[sequence.indexOf(value) + 1])
         }
-        return false;
+        return true;
     }
 
     findXmas(_grid: Array<Array<Coordinate>>) {
         let count = 0;
+        const sequence = ["X", "M", "A", "S"];
         for (const [dx, dy] of this.directions2d()) {
-            if (this.checkXmas(_grid, dx, dy, "M")) {
+            if (this.checkSequence(sequence, _grid, dx, dy)) {
                 count++;
             }
         }
@@ -46,17 +51,17 @@ class Coordinate extends UtilCoordinate {
     }
 
     findCrossMas(_grid: Array<Array<Coordinate>>) {
-        const topLeft = _grid[this.y - 1] && _grid[this.y - 1][this.x - 1];
-        const topRight = _grid[this.y - 1] && _grid[this.y - 1][this.x + 1];
-        const bottomLeft = _grid[this.y + 1] && _grid[this.y + 1][this.x - 1];
-        const bottomRight = _grid[this.y + 1] && _grid[this.y + 1][this.x + 1];
+        const topLeft = this.getNeighbour(_grid, -1, -1);
+        const topRight = this.getNeighbour(_grid, 1, -1);
+        const bottomLeft = this.getNeighbour(_grid, -1, 1);
+        const bottomRight = this.getNeighbour(_grid, 1, 1);
         if (topLeft && topRight && bottomLeft && bottomRight) {
-            const forwardDiagonal = [bottomLeft, topRight];
-            const backDiagonal = [bottomRight, topLeft];
+            const forwardDiagonal = [bottomLeft.value, topRight.value];
+            const backDiagonal = [bottomRight.value, topLeft.value];
             const diagonals = [forwardDiagonal, backDiagonal];
-            for (const d of diagonals) {
-                const values = d.map(c => c.value);
-                if (!(values.includes("M") && values.includes("S"))) {
+            for (const diag of diagonals) {
+                // Both diagonal couplets must have both M and S to form crossMas
+                if (!(diag.includes("M") && diag.includes("S"))) {
                     return false;
                 }
             }
@@ -70,8 +75,8 @@ const grid = input.split("\n").map((row, y) => row.split("").map((c, x) => new C
 
 const exes = grid.flat().filter(c => c.value === "X");
 
-console.log(sum(exes.map(s => s.findXmas(grid))));
+console.log("Part 1", sum(exes.map(s => s.findXmas(grid))));
 
 const as = grid.flat().filter(c => c.value === "A");
 
-console.log(as.filter(a => a.findCrossMas(grid)).length);
+console.log("Part 2", as.filter(a => a.findCrossMas(grid)).length);

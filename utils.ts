@@ -55,8 +55,15 @@ export class Coordinate {
     * directions2d() {
         for (let x = -1; x < 2; x++) {
             for (let y = -1; y < 2; y++) {
+                if (x === 0 && y === 0) continue;
                 yield [x, y] as [-1 | 0 | 1, -1 | 0 | 1];
             }
         }
+    }
+
+    getNeighbour<T extends Coordinate>(grid: Array<Array<T>>, dx: number, dy: number) {
+        if (!grid[this.y + dy]) return null;
+        if (!grid[this.y + dy][this.x + dx]) return null;
+        return grid[this.y + dy][this.x + dx];
     }
 }
