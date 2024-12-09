@@ -51,6 +51,10 @@ export class Coordinate {
         this.x = x;
         this.y = y;
     }
+
+    serialise() {
+        return `${this.x},${this.y}`;
+    }
     
     * directions2d() {
         for (let x = -1; x < 2; x++) {
