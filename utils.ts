@@ -65,6 +65,13 @@ export class Coordinate {
         }
     }
 
+    * directionsManhattan() {
+        yield [0, -1];
+        yield [1, 0];
+        yield [0, 1]
+        yield [-1, 0];
+    }
+
     getNeighbour<T extends Coordinate>(grid: Array<Array<T>>, dx: number, dy: number) {
         if (!grid[this.y + dy]) return null;
         if (!grid[this.y + dy][this.x + dx]) return null;
