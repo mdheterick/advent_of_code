@@ -78,3 +78,16 @@ export class Coordinate {
         return grid[this.y + dy][this.x + dx];
     }
 }
+
+export function memoise(func: (...args: any[]) => any) {
+    const memo = new Map();
+    return function(...args: any[]) {
+        const argsHash = args.toString();
+        if (memo.has(argsHash)) {
+            return memo.get(argsHash);
+        }
+        const result = func(...args);
+        memo.set(argsHash, result);
+        return result;
+    }
+}
