@@ -77,6 +77,10 @@ export class Coordinate {
         if (!grid[this.y + dy][this.x + dx]) return null;
         return grid[this.y + dy][this.x + dx];
     }
+
+    matches(x: number, y: number) {
+        return this.x === x && this.y === y;
+    }
 }
 
 export function memoise(func: (...args: any[]) => any) {
