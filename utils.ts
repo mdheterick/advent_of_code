@@ -65,6 +65,10 @@ export class Coordinate {
         }
     }
 
+    equals(coord: Coordinate) {
+        return this.x === coord.x && this.y === coord.y;
+    }
+
     * directionsManhattan() {
         yield [0, -1];
         yield [1, 0];
