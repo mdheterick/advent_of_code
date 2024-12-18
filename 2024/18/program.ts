@@ -1,5 +1,5 @@
 import { fetchInput } from "../../fetchInput";
-import { Coordinate, range } from "../../utils";
+import { Coordinate, bisectSearch, range } from "../../utils";
 
 const data = await fetchInput(2024, 18);
 
@@ -102,19 +102,20 @@ function part1(input: string, max: typeof _max, start: typeof _max, numBytes: nu
 
 function part2(input: string, max: typeof _max, start: typeof _max, minSafe: number) {
     const coordinates = input.split("\n").map(c => new Memory(Number(c.split(",")[0]), Number(c.split(",")[1])));
-
-    for (let i = minSafe; i < coordinates.length; i++) {
+    const index = bisectSearch((search: number) => {
         try {
-            part1(input, max, start, i);
+            part1(input, max, start, search);
+            return false;
         }
         catch (error) {
-            const coordinate = coordinates[i - 1];
-            return `${coordinate.x},${coordinate.y}`;
+            return true;
         }
-    }
+    }, coordinates.length, minSafe);
+    const coordinate = coordinates[index - 1];
+    return `${coordinate.x},${coordinate.y}`;
 }
 
 // console.log("Part 1", part1(example, exampleMax, {x: 0, y: 0}, 12));
 console.log("Part 1", part1(data, _max, {x: 0, y: 0}, 1024));
-// part2(example, exampleMax, {x: 0, y: 0}, 12);
+// console.log(part2(example, exampleMax, {x: 0, y: 0}, 12));
 console.log("Part 2", part2(data, _max, {x: 0, y: 0}, 1024));

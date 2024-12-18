@@ -99,3 +99,34 @@ export function memoise(func: (...args: any[]) => any) {
         return result;
     }
 }
+
+/*
+    Similar to git bisect, runs a binary search using the test function and a numerical range
+    returns the first number in the range where the test function return true
+    for a system that has a single transition within the range
+    min|xxxxxxxxxxxxxxxxoooo|max
+                        ^
+*/
+export function bisectSearch(test: (search: number) => boolean, max: number, min = 0) {
+    let L = min;
+    let R = max - 1;
+    let m = 0;
+    let bads: Array<number> = [];
+    let goods: Array<number> = [];
+    while (L <= R) {
+        m = Math.floor((L + R) / 2);
+        if (test(m)) {
+            goods.push(m);
+            R = m - 1;
+        }
+        else {
+            bads.push(m);
+            L = m + 1;
+        }
+        const transition = goods.find(g => bads.some(b => g - b === 1));
+        if (transition) {
+            return transition;
+        }
+    }
+    throw new Error("Search failed");
+}
