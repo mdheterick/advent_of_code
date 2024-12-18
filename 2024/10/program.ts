@@ -61,7 +61,7 @@ function followTrail(grid: Array<Array<Cell>>, start: Cell, ends: Set<Cell>): nu
         return 1;
     }
     let total = 0;
-    for (const dir of start.directionsManhattan()) {
+    for (const dir of Coordinate.directionsManhattan()) {
         const next = start.getNeighbour(grid, dir[0], dir[1]);
         if (next && (next.height - start.height) === 1) {
             total += followTrail(grid, next, ends);

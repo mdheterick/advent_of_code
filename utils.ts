@@ -69,7 +69,7 @@ export class Coordinate {
         return this.x === coord.x && this.y === coord.y;
     }
 
-    * directionsManhattan() {
+    static * directionsManhattan() {
         yield [0, -1];
         yield [1, 0];
         yield [0, 1]

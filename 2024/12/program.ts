@@ -47,7 +47,7 @@ class Patch  extends Coordinate{
     }
 
     checkNeighbours(grid: Patch[][]) {
-        for (const dir of this.directionsManhattan()) {
+        for (const dir of Coordinate.directionsManhattan()) {
             const neighbour = this.getNeighbour(grid, dir[0], dir[1]);
             if (neighbour) {
                 if (neighbour.crop === this.crop) {
