@@ -87,6 +87,7 @@ export class Coordinate {
     }
 }
 
+// Always consider memoising when doing a DFS to ensure that the tail of each input only needs to be calculated once and the result can be reused
 export function memoise(func: (...args: any[]) => any) {
     const memo = new Map();
     return function(...args: any[]) {
