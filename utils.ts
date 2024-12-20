@@ -82,6 +82,28 @@ export class Coordinate {
         return grid[this.y + dy][this.x + dx];
     }
 
+    * neighboursManhattan<T extends Coordinate>(grid: Array<Array<T>>) {
+        for (const dir of Coordinate.directionsManhattan()) {
+            yield this.getNeighbour(grid, dir[0], dir[1]);
+        }
+    }
+
+    * getNeighboursRangeManhattan<T extends Coordinate>(grid: Array<Array<T>>, range: number) {
+        for (let dx = -range - 1; dx <= range + 1; dx++) {
+            for (let dy = -range - 1; dy <= range + 1; dy++) {
+                if (Math.abs(dx) + Math.abs(dy) <= range) {
+                    if (!(dx === 0 && dy === 0)) {
+                        yield this.getNeighbour(grid, dx, dy);
+                    }
+                }
+            }
+        }
+    }
+
+    manhattanDistance(other: Coordinate) {
+        return Math.abs(this.x - other.x) + Math.abs(this.y - other.y);
+    }
+
     matches(x: number, y: number) {
         return this.x === x && this.y === y;
     }
