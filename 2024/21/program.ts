@@ -1,5 +1,5 @@
 import { fetchInput } from "../../fetchInput";
-import { range, sum } from "../../utils";
+import { memoise, range, sum } from "../../utils";
 
 const data = await fetchInput(2024, 21);
 
@@ -78,36 +78,6 @@ abstract class DirectionBuilder {
             dx, dy, addedDirections: directions
         }
     }
-
-    xbuildDirections(delta: {x: number, y: number}, x: number, y: number) {
-        let dx = x;
-        let dy = y;
-        let directions: Array<keyof DirectionalRobot["buttonMap"]> = [];
-        
-        if (y !== this.invalid.y) {
-            for (const i of range(Math.abs(delta.x))) {
-                directions.push(delta.x < 0 ? "<" : ">");
-            }
-            for (const i of range(Math.abs(delta.y))) {
-                directions.push(delta.y < 0 ? "^" : "v");
-            }
-        }
-        else if (x !== this.invalid.x) {
-            for (const i of range(Math.abs(delta.y))) {
-                directions.push(delta.y < 0 ? "^" : "v");
-            }
-            for (const i of range(Math.abs(delta.x))) {
-                directions.push(delta.x < 0 ? "<" : ">");
-            }
-        }
-        dx += delta.x;
-        dy += delta.y
-        if (dx === this.invalid.x && dy === this.invalid.y) throw new Error("reached invalid location");
-        directions.push("A");
-        return {
-            dx, dy, addedDirections: directions
-        }
-    }
 }
 
 class NumpadRobot extends DirectionBuilder {
@@ -174,31 +144,56 @@ class DirectionalRobot extends DirectionBuilder {
         }
         this.start = this.buttonMap.A;
         this.invalid = {x: 0, y: 0};
+        this.runCode = memoise(this.runCode.bind(this));
+        this.buildAllDirections = memoise(this.buildAllDirections.bind(this));
     }
 
-    runCode(code: string) {
-        const buttons = code.split("") as Array<keyof DirectionalRobot["buttonMap"]>;
-        const coordinates = [{x: this.start.x, y: this.start.y}, ...buttons.map(b => this.buttonMap[b])];
-        const deltas: typeof coordinates = [];
-        for (let i = 1; i < coordinates.length; i++) {
-            deltas.push({
-                x: coordinates[i].x - coordinates[i - 1].x,
-                y: coordinates[i].y - coordinates[i - 1].y,
-            });
+    buildAllDirections(start: keyof DirectionalRobot["buttonMap"], end: keyof DirectionalRobot["buttonMap"]) {
+        const toCheck = [{position: this.buttonMap[start], path: ""}]
+        const paths: Array<string> = [];
+        while (toCheck.length) {
+            const {position, path} = toCheck.shift()!;
+            const positionCoordinate = position;
+            const target = this.buttonMap[end];
+            if (position.x === target.x && position.y === target.y) {
+                paths.push(path)
+                continue;
+            }
+            const cDelta = target.x - positionCoordinate.x;
+            if (cDelta) {
+                const newCoordinate = {x: positionCoordinate.x + (cDelta / Math.abs(cDelta)), y: positionCoordinate.y};
+                if (this.isValidPosition(newCoordinate)) {
+                    const nextPosition = cDelta > 0 ? ">" : "<"
+                    toCheck.push({position: newCoordinate, path: path + nextPosition});
+                }
+            }
+            const rDelta = target.y - positionCoordinate.y;
+            if (rDelta) {
+                const newCoordinate = {x: positionCoordinate.x, y: positionCoordinate.y + (rDelta / Math.abs(rDelta))};
+                if (this.isValidPosition(newCoordinate)) {
+                    const nextPosition = rDelta > 0 ? "v" : "^"
+                    toCheck.push({position: newCoordinate, path: path + nextPosition});
+                }
+            }
         }
-        const directions: Array<keyof DirectionalRobot["buttonMap"]> = [];
-        let x = this.start.x;
-        let y = this.start.y;
-        for (const delta of deltas) {
-            const {
-                dx, dy, addedDirections
-            } = this.buildDirections(delta, x, y);
-            x = dx;
-            y = dy;
-            directions.push(...addedDirections);
+        return paths;
+    }
+
+    isValidPosition(coordinate: {x: number, y: number}) {
+        return Object.values(this.buttonMap).some(b => b.x === coordinate.x && b.y === coordinate.y);
+    }
+
+    runCode(code: string, numRobots: number) {
+        if (numRobots === 0) return code.length;
+        let smallestLength = 0;
+        const letters = code.split("") as Array<keyof DirectionalRobot["buttonMap"]>;
+        let currentPosition: keyof DirectionalRobot["buttonMap"] = "A";
+        for (const letter of letters) {
+            const paths = this.buildAllDirections(currentPosition, letter);
+            smallestLength += Math.min(...paths.map(p => this.runCode(p + "A", numRobots - 1)));
+            currentPosition = letter;
         }
-        if (x !== this.buttonMap.A.x || y !== this.buttonMap.A.y) throw new Error("not at A");
-        return directions.join("");
+        return smallestLength;
     }
 }
 
@@ -206,15 +201,17 @@ function complexity(input: string, length: number) {
     return Number(input.replace("A", "")) * length;
 }
 
-const robots = range(2).map(() => new DirectionalRobot());
-
-
 console.log("Part 1", sum(input.split("\n").map(_code => {
     let code = _code;
     code = new NumpadRobot().runCode(code);
-    for (const robot of robots) {
-        code = robot.runCode(code);
-    }
-    console.log(code.length, Number(_code.replace("A", "")))
-    return complexity(_code, code.length);
+    const length = new DirectionalRobot().runCode(code, 2);
+    return complexity(_code, length);
+})));
+
+console.log("Part 2", sum(input.split("\n").map(_code => {
+    let code = _code;
+    code = new NumpadRobot().runCode(code);
+    const robot = new DirectionalRobot();
+    const length = robot.runCode(code, 25);
+    return complexity(_code, length);
 })));
