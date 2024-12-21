@@ -9,6 +9,7 @@ export function product<T = number>(collection: Array<T>, getter: (x: T) => numb
 
 // Returns an array of numbers from [0..length-1]
 export function range(length: number) {
+    if (length === 0) return [];
     return [...Array(length).keys()];
 }
 
