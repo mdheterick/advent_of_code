@@ -2,7 +2,45 @@ import { fetchInput } from "../../fetchInput";
 
 const data = await fetchInput(2024, 25);
 
-const example = ``;
+const example = `#####
+.####
+.####
+.####
+.#.#.
+.#...
+.....
+
+#####
+##.##
+.#.##
+...##
+...#.
+...#.
+.....
+
+.....
+#....
+#....
+#...#
+#.#.#
+#.###
+#####
+
+.....
+.....
+#.#..
+###..
+###.#
+###.#
+#####
+
+.....
+.....
+.....
+#....
+#.#..
+#.#.#
+#####`;
 
 const input = example;
 const things = input.split("\n\n");
