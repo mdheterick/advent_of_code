@@ -15,7 +15,7 @@ export function range(length: number) {
 
 
 /**
- * Computes the Last Common Multiple of two numbers;
+ * Computes the Least Common Multiple of two numbers;
  */
 function lcm2(a: number, b: number) {
     return a * (b / gcd(a, b));
