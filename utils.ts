@@ -77,10 +77,20 @@ export class Coordinate {
         yield [-1, 0];
     }
 
+    static createGrid<T extends Coordinate>(gridInput: string, factory: (x: number, y: number, char: string) => T) {
+        return gridInput.split("\n").map((row, y) => row.split("").map((cell, x) => factory(x, y, cell)) );
+    }
+
     getNeighbour<T extends Coordinate>(grid: Array<Array<T>>, dx: number, dy: number) {
         if (!grid[this.y + dy]) return null;
         if (!grid[this.y + dy][this.x + dx]) return null;
         return grid[this.y + dy][this.x + dx];
+    }
+
+    * neighbours<T extends Coordinate>(grid: Array<Array<T>>) {
+        for (const dir of this.directions2d()) {
+            yield this.getNeighbour(grid, dir[0], dir[1]);
+        }
     }
 
     * neighboursManhattan<T extends Coordinate>(grid: Array<Array<T>>) {
