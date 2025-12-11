@@ -1,5 +1,9 @@
 {
-  "dependencies": {},
+  "dependencies": {
+    "ml-matrix": "^6.12.1",
+    "typescript": "^5.9.3",
+    "z3-solver": "^4.15.4"
+  },
   "devDependencies": {
     "bun-types": "^1.1.29"
   }

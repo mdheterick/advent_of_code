@@ -1,3 +1,4 @@
+export const alphabet = "abcdefghijklmnopqrstuvwxyz";
 
 export function sum<T = number>(collection: Array<T>, getter: (x: T) => number = i => i as number) {
     return collection.reduce((sum, c) => sum + getter(c), 0);
